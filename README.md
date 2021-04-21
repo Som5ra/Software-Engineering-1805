@@ -1,5 +1,5 @@
 # Software-Engineering-1805
-Software Engineering 1805
+计科1805-软件工程课程设计
 周记见Wiki。
 
 |小组编号|组长|组员|子系统|
