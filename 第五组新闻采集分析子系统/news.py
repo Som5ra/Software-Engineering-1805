@@ -4,6 +4,8 @@ import datetime
 import re
 import pandas as pd
 '''
+@Editor: Sombra
+
 NameExhibition: [博物馆名称]
 main_texts: [新闻简介]
 times: [(具体时间，新闻发布距现在的小时数)]
