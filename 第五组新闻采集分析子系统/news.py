@@ -4,13 +4,14 @@ import datetime
 import re
 import pandas as pd
 '''
-@Editor: Sombra
-
+@author: Sombra
 NameExhibition: [博物馆名称]
 main_texts: [新闻简介]
 times: [(具体时间，新闻发布距现在的小时数)]
 sources: [新闻来源]
 sub_urls: [次级新闻网站]
+
+get_spe_exhibition(name, time_limits, contents): 数据加工
 '''
 headers = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.81 Safari/537.36",
@@ -26,7 +27,6 @@ NameExhibition = ['中国国家博物馆', '北京军事博物馆', '故宫博�
                   '北京古代钱币博物馆', '北京西周燕都遗址博物馆', '北京辽金城垣博物馆', '北京大葆台西汉墓博物馆', '北京大学赛克勒考古与艺术博物馆', '北京市白塔寺管理处',
                   '李大钊烈士陵园', '詹天佑纪念馆', '焦庄户地道战遗址纪念馆', '中央民族大学民族博物馆', '北京航空馆', '北京房山云居寺石经陈列馆', '北京市昌平区博物馆',
                   '北京红楼文化艺术博物馆']
-
 def get_soup(url):
     r = requests.get(url, headers=headers)
     r.encoding = 'utf-8'
@@ -45,7 +45,7 @@ def get_new_sources(soup):
     for i in timeAndsource:
         con = i.text.strip().split('\n')
         #print(con)
-        if len(i.text) == 2:
+        if len(con) == 2:
             pub_sources.append(con[0])
             pub_times.append(con[1])
         else:
@@ -79,7 +79,7 @@ def get_new_sources(soup):
             gap = (year_now - int(Date[0]) - 1) * 12 * 30 * 24 + (int(Date[0]) + 12 - month_now) * 30 * 24
             spe_pub_times.append((re.findall('\d+年\d+月\d+日', content), gap))
         else:
-            spe_pub_times.append('unknown')
+            spe_pub_times.append(('unknown', 'unknown'))
     return spe_pub_times, pub_sources
 
 
@@ -97,6 +97,13 @@ def WriteToExcel(contents):
     col = ['博物馆名称', '新闻来源', '新闻标题', '简介内容', '次级新闻网站', '新闻发布时间']
     csv = pd.DataFrame(columns = col, data = contents)
     csv.to_csv('baidu_news.csv')
+
+def get_spe_exhibition(name, time_limits, contents):
+    content = []
+    for i in contents:
+        if i[0] == name and int(i[5][1]) < time_limits * 24:
+            content.append(i)
+    return content
 
 if __name__ == '__main__':
     contents = []
